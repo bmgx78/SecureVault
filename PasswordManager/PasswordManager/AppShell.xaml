@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:PasswordManager.Views"
+       x:Class="PasswordManager.AppShell"
+       BackgroundColor="#1E1E2E"
+       FlyoutBehavior="Disabled"
+       Shell.TabBarBackgroundColor="#181825"
+       Shell.TabBarForegroundColor="#CDD6F4"
+       Shell.TabBarTitleColor="#89B4FA"
+       Shell.TabBarUnselectedColor="#6C7086">
+
+    <TabBar>
+        <ShellContent Title="Vault" Icon="vault_icon.png" Route="vault"
+                      ContentTemplate="{DataTemplate views:VaultPage}"/>
+        <ShellContent Title="Generator" Icon="gen_icon.png" Route="generator"
+                      ContentTemplate="{DataTemplate views:PasswordGeneratorPage}"/>
+        <ShellContent Title="Settings" Icon="settings_icon.png" Route="settings"
+                      ContentTemplate="{DataTemplate views:SettingsPage}"/>
+    </TabBar>
+</Shell>

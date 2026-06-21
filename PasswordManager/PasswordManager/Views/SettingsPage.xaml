@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:PasswordManager.Models"
+             x:Class="PasswordManager.Views.SettingsPage"
+             Title="Settings"
+             BackgroundColor="#1E1E2E">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- SYNC PROVIDER -->
+            <Label Text="SYNC PROVIDER" TextColor="#6C7086" FontSize="11" FontAttributes="Bold" Margin="0,8,0,0"/>
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Storage Provider" TextColor="#CDD6F4" FontAttributes="Bold"/>
+                    <Picker SelectedItem="{Binding Settings.StorageProvider}" TextColor="#CDD6F4" BackgroundColor="Transparent">
+                        <Picker.Items>
+                            <x:String>Local</x:String>
+                            <x:String>Firebase</x:String>
+                            <x:String>GoogleDrive</x:String>
+                            <x:String>GitHub</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Firebase -->
+            <Frame BackgroundColor="#313244" BorderColor="#F9E2AF" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="🔥 Firebase" TextColor="#F9E2AF" FontAttributes="Bold"/>
+                    <Entry Placeholder="Project ID" Text="{Binding Settings.FirebaseProjectId}"
+                           PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                    <Entry Placeholder="API Key" Text="{Binding Settings.FirebaseApiKey}"
+                           PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                    <Entry Placeholder="User Email" Text="{Binding Settings.FirebaseEmail}"
+                           Keyboard="Email" PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Google Drive -->
+            <Frame BackgroundColor="#313244" BorderColor="#A6E3A1" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="📁 Google Drive" TextColor="#A6E3A1" FontAttributes="Bold"/>
+                    <Entry Placeholder="OAuth Access Token" Text="{Binding Settings.GoogleDriveClientId}"
+                           PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                    <Label Text="Get token from: console.cloud.google.com → Drive API → OAuth 2.0"
+                           TextColor="#45475A" FontSize="11"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- GitHub -->
+            <Frame BackgroundColor="#313244" BorderColor="#89B4FA" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="🐙 GitHub" TextColor="#89B4FA" FontAttributes="Bold"/>
+                    <Entry Placeholder="Personal Access Token" Text="{Binding Settings.GitHubToken}"
+                           IsPassword="True" PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                    <Entry Placeholder="GitHub Username / Owner" Text="{Binding Settings.GitHubOwner}"
+                           PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                    <Entry Placeholder="Repository Name" Text="{Binding Settings.GitHubRepo}"
+                           PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Test Connection -->
+            <Button Text="Test Connection" Command="{Binding TestConnectionCommand}"
+                    BackgroundColor="#45475A" TextColor="#CDD6F4" CornerRadius="10"/>
+            <Label Text="{Binding TestConnectionResult}" TextColor="#A6E3A1"
+                   HorizontalOptions="Center" FontSize="13"
+                   IsVisible="{Binding TestConnectionResult, Converter={x:StaticResource StringNotEmptyConverter}}"/>
+
+            <!-- Custom Providers -->
+            <Label Text="CUSTOM PROVIDERS" TextColor="#6C7086" FontSize="11" FontAttributes="Bold" Margin="0,8,0,0"/>
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                    <Entry Placeholder="Provider Name" Text="{Binding NewProviderName}"
+                           PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                    <Entry Placeholder="Base URL (e.g. https://my-server.com/vault)"
+                           Text="{Binding NewProviderUrl}" Keyboard="Url"
+                           PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                    <Entry Placeholder="Username (optional)" Text="{Binding NewProviderUsername}"
+                           PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                    <Entry Placeholder="API Token / Password" Text="{Binding NewProviderToken}"
+                           IsPassword="True" PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                    <Button Text="Add Provider" Command="{Binding AddCustomProviderCommand}"
+                            BackgroundColor="#89B4FA" TextColor="#1E1E2E" CornerRadius="10"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- SECURITY -->
+            <Label Text="SECURITY" TextColor="#6C7086" FontSize="11" FontAttributes="Bold" Margin="0,8,0,0"/>
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Auto-Lock" TextColor="#CDD6F4" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding Settings.AutoLockEnabled}" OnColor="#89B4FA"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{Binding Settings.AutoLockMinutes, StringFormat='Auto-lock after {0} min'}"
+                               TextColor="#6C7086" VerticalOptions="Center"/>
+                        <Stepper Grid.Column="1" Minimum="1" Maximum="60" Increment="1"
+                                 Value="{Binding Settings.AutoLockMinutes}"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Biometric Unlock" TextColor="#CDD6F4" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding Settings.BiometricEnabled}" OnColor="#89B4FA"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Clear Clipboard" TextColor="#CDD6F4" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding Settings.ClipboardClearEnabled}" OnColor="#89B4FA"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Breach Check on Sync" TextColor="#CDD6F4" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding Settings.BreachCheckEnabled}" OnColor="#89B4FA"/>
+                    </Grid>
+                    <Button Text="Change Master Password" Command="{Binding ChangeMasterPasswordCommand}"
+                            BackgroundColor="#45475A" TextColor="#CDD6F4" CornerRadius="10"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- VAULT BACKUP -->
+            <Label Text="VAULT BACKUP" TextColor="#6C7086" FontSize="11" FontAttributes="Bold" Margin="0,8,0,0"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <Button Grid.Column="0" Text="📤 Export" Command="{Binding ExportVaultCommand}"
+                        BackgroundColor="#313244" TextColor="#CDD6F4" CornerRadius="10"/>
+                <Button Grid.Column="1" Text="📥 Import" Command="{Binding ImportVaultCommand}"
+                        BackgroundColor="#313244" TextColor="#CDD6F4" CornerRadius="10"/>
+            </Grid>
+
+            <!-- Save -->
+            <Button Text="Save Settings" Command="{Binding SaveCommand}"
+                    BackgroundColor="#89B4FA" TextColor="#1E1E2E" FontAttributes="Bold"
+                    CornerRadius="12" HeightRequest="52" Margin="0,8,0,24"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

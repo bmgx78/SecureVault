@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PasswordManager.ViewModels"
+             xmlns:models="clr-namespace:PasswordManager.Models"
+             x:Class="PasswordManager.Views.VaultPage"
+             Title="SecureVault"
+             BackgroundColor="#1E1E2E">
+
+    <Shell.TitleView>
+        <HorizontalStackLayout Spacing="12" VerticalOptions="Center" Padding="0,0,12,0">
+            <Label Text="🔐 SecureVault" FontSize="18" FontAttributes="Bold"
+                   TextColor="#CDD6F4" VerticalOptions="Center"/>
+            <Label Text="{Binding TotalEntries, StringFormat='{0} items'}"
+                   FontSize="13" TextColor="#6C7086" VerticalOptions="Center"/>
+        </HorizontalStackLayout>
+    </Shell.TitleView>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="16" RowSpacing="12">
+
+        <!-- Stats Bar -->
+        <HorizontalStackLayout Grid.Row="0" Spacing="8">
+            <Frame BackgroundColor="#313244" BorderColor="Transparent" CornerRadius="8" Padding="10,6">
+                <Label TextColor="#A6E3A1" FontSize="12"
+                       Text="{Binding TotalEntries, StringFormat='✅ {0} Entries'}"/>
+            </Frame>
+            <Frame BackgroundColor="#313244" BorderColor="Transparent" CornerRadius="8" Padding="10,6"
+                   IsVisible="{Binding WeakPasswordCount, Converter={x:StaticResource IntGreaterThanZeroConverter}}">
+                <Label TextColor="#FAB387" FontSize="12"
+                       Text="{Binding WeakPasswordCount, StringFormat='⚠️ {0} Weak'}"/>
+            </Frame>
+            <Frame BackgroundColor="#313244" BorderColor="Transparent" CornerRadius="8" Padding="10,6"
+                   IsVisible="{Binding BreachCount, Converter={x:StaticResource IntGreaterThanZeroConverter}}">
+                <Label TextColor="#F38BA8" FontSize="12"
+                       Text="{Binding BreachCount, StringFormat='🚨 {0} Breached'}"/>
+            </Frame>
+        </HorizontalStackLayout>
+
+        <!-- Search + Filter -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="10" Padding="4">
+                <Entry Placeholder="Search passwords..." PlaceholderColor="#6C7086"
+                       TextColor="#CDD6F4" BackgroundColor="Transparent"
+                       Text="{Binding SearchQuery}"/>
+            </Frame>
+            <Picker Grid.Column="1" Title="All" SelectedItem="{Binding SelectedCategory}"
+                    TextColor="#CDD6F4" BackgroundColor="#313244">
+                <Picker.Items>
+                    <x:String>All</x:String>
+                    <x:String>Login</x:String>
+                    <x:String>CreditCard</x:String>
+                    <x:String>Identity</x:String>
+                    <x:String>SecureNote</x:String>
+                    <x:String>SSHKey</x:String>
+                    <x:String>ApiKey</x:String>
+                </Picker.Items>
+            </Picker>
+        </Grid>
+
+        <!-- Entry List -->
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Entries}">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
+                    <Label Text="🗝️" FontSize="48" HorizontalOptions="Center"/>
+                    <Label Text="No passwords yet" TextColor="#6C7086" FontSize="16" HorizontalOptions="Center"/>
+                    <Label Text="Tap + to add your first entry" TextColor="#45475A" FontSize="13" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:VaultEntry">
+                    <SwipeView>
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Copy PW" BackgroundColor="#89B4FA"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VaultViewModel}}, Path=CopyPasswordCommand}"
+                                           CommandParameter="{Binding}"/>
+                                <SwipeItem Text="Favorite" BackgroundColor="#F9E2AF"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VaultViewModel}}, Path=ToggleFavoriteCommand}"
+                                           CommandParameter="{Binding}"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Delete" BackgroundColor="#F38BA8"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VaultViewModel}}, Path=DeleteEntryCommand}"
+                                           CommandParameter="{Binding}"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="12"
+                               Margin="0,4" Padding="16">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VaultViewModel}}, Path=OpenEntryCommand}"
+                                    CommandParameter="{Binding}"/>
+                            </Frame.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Frame Grid.Column="0" BackgroundColor="#45475A" CornerRadius="8"
+                                       WidthRequest="44" HeightRequest="44" Padding="0">
+                                    <Label Text="{Binding Title, Converter={x:StaticResource TitleToInitialConverter}}"
+                                           FontSize="20" HorizontalOptions="Center" VerticalOptions="Center"
+                                           TextColor="#CDD6F4"/>
+                                </Frame>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding Title}" FontAttributes="Bold"
+                                           FontSize="15" TextColor="#CDD6F4"/>
+                                    <Label Text="{Binding Username}" FontSize="12" TextColor="#6C7086"/>
+                                    <Label Text="{Binding Url}" FontSize="11" TextColor="#45475A"
+                                           LineBreakMode="TailTruncation"/>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                                    <Label Text="⭐" IsVisible="{Binding IsFavorite}" FontSize="14"/>
+                                    <Label Text="🚨" IsVisible="{Binding HasBreachAlert}" FontSize="14"/>
+                                    <Label Text="{Binding PasswordStrength, StringFormat='{0}%'}"
+                                           FontSize="10" TextColor="{Binding PasswordStrength, Converter={x:StaticResource StrengthToColorConverter}}"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- FAB -->
+        <HorizontalStackLayout Grid.Row="3" HorizontalOptions="End" Spacing="8">
+            <Button Text="🔍 Check Breaches" Command="{Binding RunBreachCheckCommand}"
+                    BackgroundColor="#313244" TextColor="#F38BA8" CornerRadius="24" HeightRequest="48"/>
+            <Button Text="+ Add" Command="{Binding AddEntryCommand}"
+                    BackgroundColor="#89B4FA" TextColor="#1E1E2E"
+                    FontAttributes="Bold" CornerRadius="24" HeightRequest="48" WidthRequest="90"/>
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>

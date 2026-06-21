@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SecureVault</title>
+  <link rel="stylesheet" href="popup.css"/>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- Locked state -->
+  <div id="locked-view" class="view">
+    <div class="header">
+      <span class="logo">🔐</span>
+      <h1>SecureVault</h1>
+    </div>
+    <p class="subtitle">Vault is locked</p>
+    <label class="field-label">Master Password</label>
+    <input type="password" id="master-pw" placeholder="Enter master password" autocomplete="off"/>
+    <button id="unlock-btn" class="btn-primary">Unlock</button>
+    <p id="unlock-error" class="error"></p>
+  </div>
+
+  <!-- Unlocked / credential list -->
+  <div id="unlocked-view" class="view hidden">
+    <div class="header">
+      <span class="logo">🔐</span>
+      <h1>SecureVault</h1>
+      <button id="lock-btn" class="btn-icon" title="Lock vault">🔒</button>
+    </div>
+    <input type="search" id="search" placeholder="Search passwords…"/>
+    <div id="domain-label" class="domain-label"></div>
+    <div id="cred-list" class="cred-list"></div>
+    <div class="toolbar">
+      <button id="gen-btn" class="btn-secondary">⚡ Generate Password</button>
+      <button id="open-app-btn" class="btn-secondary">Open App</button>
+    </div>
+  </div>
+
+  <!-- Generator view -->
+  <div id="gen-view" class="view hidden">
+    <div class="header">
+      <button id="gen-back" class="btn-icon">←</button>
+      <h1>Generator</h1>
+    </div>
+    <div id="gen-output" class="gen-output">Click Generate</div>
+    <div class="strength-bar"><div id="strength-fill" class="strength-fill"></div></div>
+    <label class="field-label">Length: <span id="len-val">20</span></label>
+    <input type="range" id="len-slider" min="8" max="64" value="20"/>
+    <div class="option-row">
+      <label>Uppercase</label><input type="checkbox" id="opt-upper" checked/>
+    </div>
+    <div class="option-row">
+      <label>Numbers</label><input type="checkbox" id="opt-digits" checked/>
+    </div>
+    <div class="option-row">
+      <label>Symbols</label><input type="checkbox" id="opt-symbols" checked/>
+    </div>
+    <div class="btn-row">
+      <button id="do-gen" class="btn-primary">Generate</button>
+      <button id="copy-gen" class="btn-secondary">Copy</button>
+    </div>
+    <p id="gen-copied" class="success hidden">Copied! Clears in 30s.</p>
+  </div>
+
+</div>
+<script src="popup.js"></script>
+</body>
+</html>

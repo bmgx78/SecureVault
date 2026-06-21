@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PasswordManager.ViewModels"
+             x:Class="PasswordManager.Views.EntryEditPage"
+             Title="Edit Entry"
+             BackgroundColor="#1E1E2E">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- Title -->
+            <Label Text="Title *" TextColor="#6C7086" FontSize="12"/>
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="10" Padding="4">
+                <Entry Text="{Binding Entry.Title}" Placeholder="e.g. GitHub"
+                       PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+            </Frame>
+
+            <!-- Category -->
+            <Label Text="Category" TextColor="#6C7086" FontSize="12"/>
+            <Picker SelectedItem="{Binding Entry.Category}" BackgroundColor="#313244" TextColor="#CDD6F4">
+                <Picker.Items>
+                    <x:String>Login</x:String>
+                    <x:String>CreditCard</x:String>
+                    <x:String>Identity</x:String>
+                    <x:String>SecureNote</x:String>
+                    <x:String>SSHKey</x:String>
+                    <x:String>ApiKey</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- Username -->
+            <Label Text="Username / Email" TextColor="#6C7086" FontSize="12"/>
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="10" Padding="4">
+                <Entry Text="{Binding Entry.Username}" Placeholder="user@example.com"
+                       PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+            </Frame>
+
+            <!-- Password -->
+            <Label Text="Password" TextColor="#6C7086" FontSize="12"/>
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="10" Padding="4">
+                    <Entry Text="{Binding PlainPassword}"
+                           IsPassword="{Binding ShowPassword, Converter={x:StaticResource InvertBoolConverter}}"
+                           PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+                </Frame>
+                <Button Grid.Column="1" Text="👁" BackgroundColor="#313244"
+                        Command="{Binding ToggleShowPasswordCommand}"
+                        CornerRadius="10" WidthRequest="44"/>
+                <Button Grid.Column="2" Text="⚡" BackgroundColor="#89B4FA" TextColor="#1E1E2E"
+                        Command="{Binding GeneratePasswordCommand}"
+                        CornerRadius="10" WidthRequest="44" ToolTipProperties.Text="Generate"/>
+            </Grid>
+
+            <!-- Strength indicator -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <ProgressBar Progress="{Binding PasswordStrength, Converter={x:StaticResource PercentToDoubleConverter}}"
+                             ProgressColor="{Binding PasswordStrength, Converter={x:StaticResource StrengthToColorConverter}}"
+                             HeightRequest="6"/>
+                <Label Grid.Column="1" Text="{Binding PasswordStrengthLabel}"
+                       FontSize="11" TextColor="#6C7086" VerticalOptions="Center"/>
+            </Grid>
+
+            <!-- Generate passphrase -->
+            <Button Text="Generate Passphrase Instead" Command="{Binding GeneratePassphraseCommand}"
+                    BackgroundColor="Transparent" TextColor="#89B4FA" FontSize="13"/>
+
+            <!-- URL -->
+            <Label Text="Website URL" TextColor="#6C7086" FontSize="12"/>
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="10" Padding="4">
+                <Entry Text="{Binding Entry.Url}" Placeholder="https://github.com"
+                       Keyboard="Url" PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+            </Frame>
+
+            <!-- TOTP -->
+            <Label Text="Two-Factor Secret (TOTP)" TextColor="#6C7086" FontSize="12"/>
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="10" Padding="4">
+                <Entry Text="{Binding Entry.Totp}" Placeholder="JBSWY3DPEHPK3PXP (Base32)"
+                       PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+            </Frame>
+            <Frame BackgroundColor="#313244" BorderColor="#A6E3A1" CornerRadius="10" Padding="12"
+                   IsVisible="{Binding TotpCode, Converter={x:StaticResource StringNotEmptyConverter}}">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="{Binding TotpCode}" FontSize="28" FontAttributes="Bold"
+                           TextColor="#A6E3A1" LetterSpacing="6"/>
+                    <Label Grid.Column="1" Text="{Binding TotpSecondsLeft, StringFormat='{0}s'}"
+                           FontSize="14" TextColor="#6C7086" VerticalOptions="End"/>
+                </Grid>
+            </Frame>
+
+            <!-- Notes -->
+            <Label Text="Notes" TextColor="#6C7086" FontSize="12"/>
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="10" Padding="4">
+                <Editor Text="{Binding Entry.Notes}" Placeholder="Optional notes..."
+                        PlaceholderColor="#6C7086" TextColor="#CDD6F4"
+                        BackgroundColor="Transparent" HeightRequest="80"/>
+            </Frame>
+
+            <!-- Tags -->
+            <Label Text="Tags (comma-separated)" TextColor="#6C7086" FontSize="12"/>
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="10" Padding="4">
+                <Entry Placeholder="work, social, finance"
+                       PlaceholderColor="#6C7086" TextColor="#CDD6F4" BackgroundColor="Transparent"/>
+            </Frame>
+
+            <!-- Favorite -->
+            <HorizontalStackLayout Spacing="12">
+                <Switch IsToggled="{Binding Entry.IsFavorite}" OnColor="#89B4FA"/>
+                <Label Text="Add to Favorites" TextColor="#CDD6F4" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+
+            <!-- Action buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
+                <Button Grid.Column="0" Text="Cancel" Command="{Binding CancelCommand}"
+                        BackgroundColor="#313244" TextColor="#CDD6F4" CornerRadius="12" HeightRequest="52"/>
+                <Button Grid.Column="1" Text="Save" Command="{Binding SaveCommand}"
+                        BackgroundColor="#89B4FA" TextColor="#1E1E2E"
+                        FontAttributes="Bold" CornerRadius="12" HeightRequest="52"/>
+            </Grid>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="#89B4FA"
+                               IsVisible="{Binding IsBusy}"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

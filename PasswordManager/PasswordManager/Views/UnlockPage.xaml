@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PasswordManager.ViewModels"
+             x:Class="PasswordManager.Views.UnlockPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#1E1E2E">
+
+    <Grid RowDefinitions="*,Auto,*" Padding="32">
+        <VerticalStackLayout Grid.Row="1" Spacing="24">
+
+            <!-- Logo / Title -->
+            <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                <Label Text="🔐" FontSize="64" HorizontalOptions="Center"/>
+                <Label Text="SecureVault" FontSize="32" FontAttributes="Bold"
+                       TextColor="#CDD6F4" HorizontalOptions="Center"/>
+                <Label Text="Your encrypted password manager" FontSize="14"
+                       TextColor="#6C7086" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+
+            <!-- Master Password -->
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="12" Padding="4">
+                <Entry Placeholder="Master password"
+                       PlaceholderColor="#6C7086"
+                       TextColor="#CDD6F4"
+                       IsPassword="True"
+                       Text="{Binding MasterPassword}"
+                       ReturnCommand="{Binding UnlockCommand}"
+                       BackgroundColor="Transparent"/>
+            </Frame>
+
+            <!-- Confirm password (new vault only) -->
+            <Frame BackgroundColor="#313244" BorderColor="#45475A" CornerRadius="12" Padding="4"
+                   IsVisible="{Binding IsNewVault}">
+                <Entry Placeholder="Confirm master password"
+                       PlaceholderColor="#6C7086"
+                       TextColor="#CDD6F4"
+                       IsPassword="True"
+                       Text="{Binding ConfirmPassword}"
+                       BackgroundColor="Transparent"/>
+            </Frame>
+
+            <!-- Error -->
+            <Label Text="{Binding ErrorMessage}" TextColor="#F38BA8"
+                   HorizontalOptions="Center" FontSize="13"
+                   IsVisible="{Binding ErrorMessage, Converter={x:StaticResource StringNotEmptyConverter}}"/>
+
+            <!-- Unlock button -->
+            <Button Text="{Binding IsNewVault, Converter={x:StaticResource BoolToStringConverter}, ConverterParameter='Create Vault|Unlock'}"
+                    Command="{Binding UnlockCommand}"
+                    BackgroundColor="#89B4FA" TextColor="#1E1E2E"
+                    FontAttributes="Bold" CornerRadius="12" HeightRequest="52"
+                    IsEnabled="{Binding IsBusy, Converter={x:StaticResource InvertBoolConverter}}"/>
+
+            <!-- Biometric -->
+            <Button Text="Use Biometric" Command="{Binding UseBiometricCommand}"
+                    BackgroundColor="Transparent" TextColor="#89B4FA"
+                    BorderColor="#89B4FA" BorderWidth="1" CornerRadius="12" HeightRequest="48"/>
+
+            <!-- Loading -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="#89B4FA"
+                               IsVisible="{Binding IsBusy}"/>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
